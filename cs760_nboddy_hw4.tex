@@ -115,8 +115,9 @@
 %%% NOTE:  Replace 'NAME HERE' etc., and delete any "\red{}" wrappers (so it won't show up as red)
 
 \author{
-\red{$>>$NAME HERE$<<$} \\
-\red{$>>$ID HERE$<<$}\\
+Nick Boddy\\
+nboddy\\ \\
+GitHub Repo: https://github.com/Nick-Boddy/CS760-HW4-Bayes-NN \\
 } 
 
 \date{}
@@ -140,6 +141,18 @@ Strategy 1: $\hat x \in \argmax_x \theta_x$, the outcome with the highest probab
 
 Strategy 2: You mimic the world by generating a prediction $\hat x \sim \mbox{multinomial}(\theta)$.  (Hint: your randomness and the world's randomness are independent)
 
+\begin{soln}
+	Strategy 1: If we select the $x$ that maximizes $\theta_x$, we end up with the largest value in $\theta$, denoted $\theta_{\hat x}$. \\
+	$$\E[\ind_{\hat x \neq x}] = Pr(\hat x \neq x)$$
+	$$ = 1 - Pr(\hat x = x)$$
+	$$ = 1 - \theta_{\hat x}$$ \\
+	Strategy 2: If we generate a prediction $\hat x \sim \mbox{multinomial}(\theta)$, then the probability that $\hat x = x$ is $\theta_x$.
+	\\
+	$$\E[\ind_{\hat x \neq x}] = Pr(\hat x \neq x)$$
+	$$ = 1 - Pr(\hat x = x)$$
+	$$ = 1 - \theta_{x}$$
+\end{soln}
+
 
 \section{Best Prediction Under Different Misclassification Losses (6 pts)}
 Like in the previous question, 
@@ -149,7 +162,27 @@ $c_{ii}=0$ for all $i$.
 This is a way to generalize different costs on false positives vs false negatives from binary classification to multi-class classification.
 You want to minimize your expected loss:
 $$\E[c_{x \hat x}]$$
-Derive your optimal prediction $\hat x$.
+Derive your optimal prediction $\hat x$. \\
+
+\begin{soln}
+	$\E[c_{x \hat x}]$ is the expected loss when predicting $x$ using $\hat x$.
+	$$\E[c_{x \hat x}] = \sum_{i=1}^{k} \sum_{j=1}^{k} Pr(x=i \land \hat x=j) \cdot c_{ij}$$
+	$$ = \sum_{i=1}^{k} Pr(x=i)\sum_{j=1}^{k} Pr(\hat x=j | x=i) \cdot c_{ij}$$
+	$$ = \sum_{i=1}^{k} Pr(x=i) \E[c_{i \hat x}]$$
+	$$ = \sum_{i=1}^{k} \theta_i \cdot \E[c_{i \hat x}]$$
+	$$\hat x = \arg \min_{\hat x} \sum_{i=1}^{k} \theta_i \cdot \E[c_{i \hat x}]$$
+	$$ = \arg \min_{\hat x} \sum_{i=1}^{k} \theta_i \cdot c_{i \hat x}$$
+	$$ = \arg \min_{\hat x} \theta^{\top} c_{\hat x}$$
+	\begin{center}
+		where $c_{\hat x} = \begin{bmatrix}
+		c_{1\hat x} \\
+		c_{2\hat x} \\
+		\vdots \\
+		c_{k\hat x}
+	\end{bmatrix}$
+	\end{center}
+	In other words, the optimal $\hat x$ is the one in which $\theta^{\top} c_{\hat x}$ is lowest. This makes sense - the expected loss is the weight of the loss multiplied by the probability of it happening.
+\end{soln}
 
 
 \section{Language Identification with Naive Bayes (8 pts each)}
