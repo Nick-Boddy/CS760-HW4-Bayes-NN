@@ -207,6 +207,12 @@ Give the formula for additive smoothing with parameter $\frac{1}{2}$ in this cas
 Print and include in final report the prior probabilities.
 (Hint: Store all probabilities here and below in $\log()$ internally to avoid underflow. This also means you need to do arithmetic in log-space.  But answer questions with probability, not log probability.)
 
+\begin{soln}
+	$$\hat p(y = e) = \frac{N_{y=e} + 0.5}{N_{total} + 0.5(3)} = \frac{10 + 0.5}{30 + 1.5} = \frac{1}{3}$$
+	$$\hat p(y = j) = \frac{N_{y=j} + 0.5}{N_{total} + 0.5(3)} = \frac{10 + 0.5}{30 + 1.5} = \frac{1}{3}$$
+	$$\hat p(y = s) = \frac{N_{y=s} + 0.5}{N_{total} + 0.5(3)} = \frac{10 + 0.5}{30 + 1.5} = \frac{1}{3}$$
+	Since we have the same number of samples for each language (10 documents), it makes sense that even with additive smoothing they have the same probabilities.
+\end{soln}
 
 \item
 Using the same training data, estimate the class conditional probability (multinomial parameter) for English
@@ -216,14 +222,119 @@ Again use additive smoothing with parameter $\frac{1}{2}$.
 Give the formula for additive smoothing with parameter $\frac{1}{2}$ in this case. 
 Print $\theta_e$ and include in final report which is a vector with 27 elements.
 
+\begin{soln}
+	$$\theta_{i,e} := \hat p(c_i \mid y=e)$$
+	$$= \frac{N_{c_i, e} + 0.5}{N_{e} + 0.5(27)}$$
+	Here, $N_{c_i, e}$ is the total count of character $c_i$ in training documents labeled $y=e$. $N_e$ is total count of all characters for that same label.
+	My computed vector for $\theta_e$ is:\\
+	$$\theta_e = \begin{bmatrix}
+		0.0601685114819098\\
+		0.011134974392863043\\
+		0.021509995043779945\\
+		0.021972575582355856\\
+		0.1053692383941847\\
+		0.018932760614571286\\
+		0.017478936064761277\\
+		0.047216256401784236\\
+		0.055410540227986124\\
+		0.001420783082768875\\
+		0.0037336857756484387\\
+		0.028977366595076822\\
+		0.020518751032545846\\
+		0.057921691723112505\\
+		0.06446390219725756\\
+		0.01675202378985627\\
+		0.0005617049396993227\\
+		0.053824549810011564\\
+		0.06618205848339666\\
+		0.08012555757475633\\
+		0.026664463902197257\\
+		0.009284652238559392\\
+		0.015496448042293078\\
+		0.001156451346439782\\
+		0.013844374690236246\\
+		0.0006277878737815959\\
+		0.1792499586981662\\
+	\end{bmatrix}$$
+\end{soln}
 
 \item
 Print $\theta_j, \theta_s$ and include in final report the class conditional probabilities for Japanese and Spanish.
+
+\begin{soln}
+	$$\theta_j = \begin{bmatrix}
+		0.1317656102589189\\
+		0.010866906600510151\\
+		0.005485866033054963\\
+		0.01722631818022992\\
+		0.06020475907613823\\
+		0.003878542227191726\\
+		0.014011670568503443\\
+		0.03176211607673224\\
+		0.09703343932352633\\
+		0.0023411020650616725\\
+		0.05740941332681086\\
+		0.001432614696530277\\
+		0.03979873510604843\\
+		0.05671057688947902\\
+		0.09116321324993885\\
+		0.0008735455466648031\\
+		0.00010482546559977637\\
+		0.04280373178657535\\
+		0.0421747789929767\\
+		0.056990111464411755\\
+		0.07061742199238269\\
+		0.0002445927530661449\\
+		0.01974212935462455\\
+		3.4941821866592126e-05\\
+		0.01415143785596981\\
+		0.00772214263251686\\
+		0.12344945665466997\\
+	\end{bmatrix}
+	\theta_s = \begin{bmatrix}
+		0.10456045141993771\\
+		0.008232863618143134\\
+		0.03752582405722919\\
+		0.039745922111559924\\
+		0.1138108599796491\\
+		0.00860287996053159\\
+		0.0071844839813758445\\
+		0.0045327001942585795\\
+		0.049859702136844375\\
+		0.006629459467793161\\
+		0.0002775122567913416\\
+		0.052943171656748174\\
+		0.02580863988159477\\
+		0.054176559464709693\\
+		0.07249236841293824\\
+		0.02426690512164287\\
+		0.007677839104560451\\
+		0.05929511886774999\\
+		0.06577040485954797\\
+		0.03561407295488884\\
+		0.03370232185254849\\
+		0.00588942678301625\\
+		9.250408559711388e-05\\
+		0.0024976103111220747\\
+		0.007862847275754679\\
+		0.0026826184823163022\\
+		0.16826493170115014\\
+	\end{bmatrix}$$
+\end{soln}
 
 \item
 Treat e10.txt as a test document $x$.
 Represent $x$ as a bag-of-words count vector (Hint: the vocabulary has size 27).
 Print the bag-of-words vector $x$ and include in final report.
+
+\begin{soln}
+	e10.txt has the following "bag-of-words" (character counts):
+	$$\begin{bmatrix}
+		164,  32,  53,  57, 311,  55,  51, 140, 140,   3,   6,  85,  64,
+		139, 182,  53,   3, 141, 186, 225,  65,  31,  47,   4,  38,   2,
+		498
+	\end{bmatrix}$$
+\end{soln}
 
 \item
 Compute $\hat p(x \mid y)$ for $y=e, j, s$ under the multinomial model assumption, respectively.
@@ -233,18 +344,52 @@ where $x=(x_1, \ldots, x_d)$.
 Show the three values: $\hat p(x \mid y=e), \hat p(x \mid y=j), \hat p(x \mid y=s)$.
 Hint: you may notice that we omitted the multinomial coefficient.  This is ok for classification because it is a constant w.r.t. $y$.
 
+\begin{soln}
+	$$\log \hat p(x \mid y) = \sum_{i=1}^{d} \log \theta_{i, y}^{x_i} = \sum_{i=1}^{d} x_i \log \theta_{i, y}$$
+	
+	$$\hat p(x \mid y=e) = e^{-7841.865447060635}$$
+	$$\hat p(x \mid y=j) = e^{-8771.433079075032}$$
+	$$\hat p(x \mid y=s) = e^{-8467.282044010557}$$
+\end{soln}
 
 \item
 Use Bayes rule and your estimated prior and likelihood, compute the posterior $\hat p(y \mid x)$.
 Show the three values: $\hat p(y=e \mid x), \hat p(y=j \mid x), \hat p(y=s \mid x)$.
 Show the predicted class label of $x$.
 
+\begin{soln}
+	$$\hat p(y \mid x) = \frac{\hat p(x \mid y) \hat p(y)}{\hat p(x)}$$
+	However, since we're just finding the y that maximizes this posterior, we can drop $\hat p(x)$ as such:
+	$$\hat p(y \mid x) = \hat p(x \mid y) \hat p(y)$$
+	\\
+	$$\hat p(y=e \mid x) = \hat p(x \mid y=e) \hat p(y=e) = \frac{e^{-7841.865447060635}}{3}$$
+	$$\hat p(y=j \mid x) = \hat p(x \mid y=j) \hat p(y=j) = \frac{e^{-8771.433079075032}}{3}$$
+	$$\hat p(y=s \mid x) = \hat p(x \mid y=s) \hat p(y=s) = \frac{e^{-8467.282044010557}}{3}$$
+	
+	$$\hat y = \argmax_y \hat p(y \mid x) = e$$
+\end{soln}
+
 
 \item
 Evaluate the performance of your classifier on the test set (files 10.txt to 19.txt in three languages).
 Present the performance using a confusion matrix. A confusion matrix summarizes the types of errors your classifier makes, as shown in the table below.   The columns are the true language a document is in, and the rows are the classified outcome of that document.  The cells are the number of test documents in that situation.  For example, the cell with row = English and column = Spanish contains the number of test documents that are really Spanish, but misclassified as English by your classifier.
 
+\begin{soln}
+	\centering
+	$$\text{Confusion Matrix:}\begin{tabular}{ c  c  c  c }
+		& $y = e$ & $y = j$ & $y = s$ \\ \hline
+		$\hat y = e$ & 10 & 0 & 0 \\
+		$\hat y = j$ & 0 & 10 & 0 \\
+		$\hat y = s$ & 0 & 0 & 10 \\
+	\end{tabular}$$
+	As we can observe from the confusion matrix above, our Naive Bayes classifier has 100\% accuracy on our test set. We might infer from this that letter frequency can be a decent predictor of language (at least in regards to distinguishing these three languages).
+\end{soln}
+
 \item If you take a test document and arbitrarily shuffle the order of its characters so that the words (and spaces) are scrambled beyond human recognition.  How does this shuffling affect your Naive Bayes classifier's prediction on this document?  Explain the key mathematical step in the Naive Bayes model that justifies your answer.
+
+\begin{soln}
+	Such a shuffling of a test document would not affect its prediction at all. Our Naive Bayes classifier considers only the counts (i.e. frequency) of each character and doesn't care at all about ordering. As described before, we consider the document to be a "bag of words", in that position is meaningless. We see this mathematically in part 5, where we express the probability of $x$ given $y$ to be the product of the conditional probabilities of every individual character in $x$.
+\end{soln}
 
 \end{enumerate}
 
