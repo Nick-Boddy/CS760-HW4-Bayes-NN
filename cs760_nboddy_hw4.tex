@@ -408,6 +408,58 @@ L(x, y) = -\sum_{i=1}^k y \text{log}(\hat{y})
 
 \begin{enumerate}
     \item Derive backpropagation updates for the above neural network. (5 pts)
+    
+    \begin{soln}
+    	Each weight will update according to: $w = w - \alpha \nabla L(w)$ (for a simple SGD). \\
+    	Starting with our loss function $L(x, y) = -\sum_{i=1}^k y_i \text{log}(\hat{y_i})$, we want to compute the gradient with respect to $W_1$ and $W_2$.
+    	We'll define the following:
+    	$$z = W_2a$$
+    	$$a = \sigma (W_1x)$$
+    	\\
+    	Calculating the gradient with respect to $z_i$:
+    	$$\frac{\partial L}{\partial z_i} = \frac{\partial}{\partial z_i} \left[-\sum_{n=1}^k y_n \text{log}(\hat{y_n})\right]$$
+    	$$ = \frac{\partial}{\partial z_i} \left[-\sum_{n=1}^k y_n \text{log}(g(z_n))\right]$$
+    	$$ = -\sum_{n=1}^k \frac{y_n}{g(z_n)} \frac{\partial}{\partial z_i}\left(g(z_n)\right)$$
+    	$$\frac{\partial}{\partial z_i}\left(g(z_n)\right) = \frac{\partial}{\partial z_i}\left(\frac{e^{z_n}}{\sum_{m=1}^{k}e^{z_m}}\right)$$
+    	if $n = i$, we derive as follows:
+    	$$ = \frac{e^{z_n} * \sum_{m=1}^{k}e^{z_m} - e^{z_n} * e^{z_n}}{\left(\sum_{m=1}^{k}e^{z_m}\right)^2}$$
+    	$$ = \frac{e^{z_n} \left(\sum_{m=1}^{k}e^{z_m} - e^{z_n}\right)}{\sum_{m=1}^{k}e^{z_m} \sum_{m=1}^{k}e^{z_m}}$$
+    	$$ = g(z_n)(1 - g(z_n))$$
+    	if $n \neq i$, we derive similarly:
+    	$$ = \frac{0 * \sum_{m=1}^{k}e^{z_m} - e^{z_n} * e^{z_i}}{\left(\sum_{m=1}^{k}e^{z_m}\right)^2}$$
+    	$$ = \frac{-e^{z_n}e^{z_i}}{\sum_{m=1}^{k}e^{z_m}\sum_{m=1}^{k}e^{z_m}}$$
+    	$$ = -g(z_n) g(z_i)$$
+    	$$\frac{\partial L}{\partial z_i} = -\sum_{n=1}^k \frac{y_n}{g(z_n)} \frac{\partial}{\partial z_i}\left(g(z_n)\right)$$
+    	$$ = - \left[\sum_{n=1, n \neq i}^{k} \frac{y_n}{g(z_n)} (-g(z_n))g(z_i) + \frac{y_i}{g(z_i)} g(z_i)(1 - g(z_i))\right]$$
+    	$$ = - \left[- \sum_{n=1, n \neq i}^{k} y_n g(z_i) + y_i (1 - g(z_i))\right]$$
+    	$$ = - \left[- g(z_i) \sum_{n=1, n \neq i}^{k} y_n + y_i (1 - g(z_i))\right]$$
+    	$$ = \left[g(z_i) \left( \sum_{n=1, n \neq i}^{k} y_n \right) - y_i (1 - g(z_i))\right]$$
+    	$$ = \left[g(z_i) \left( \sum_{n=1, n \neq i}^{k} y_n \right) + y_i g(z_i) - y_i\right]$$
+    	$$ = \left[g(z_i) \left( \sum_{n=1}^{k} y_n \right) - y_i\right]$$
+    	Since y is a one-hot vector, its summation equals one:
+    	$$\frac{\partial L}{\partial z_i} = g(z_i) - y_i = \hat{y_i} - y_i$$
+    	$$\frac{\partial L}{\partial z} = \hat{y} - y$$
+    	Note that $\frac{\partial L}{\partial z}$ is a $k \times 1$ vector.
+    	
+    	Now, calculating the gradient with respect to $W_2$:
+    	$$ \frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial z} \frac{\partial z}{\partial W_2}$$
+    	$$ = (\hat{y} - y) \left(\frac{\partial}{\partial W_2} W_2a\right)$$
+    	$$ = (\hat{y} - y) a^\top$$
+    	Note that $\frac{\partial L}{\partial W_2}$ is a $k \times d_1$ matrix. \\
+    	Now, to calculate the gradient with respect to $W_1$:
+    	$$\frac{\partial L}{\partial W_1} = \frac{\partial L}{\partial a} \frac{\partial a}{\partial W_1}$$
+    	$$\frac{\partial L}{\partial a} = \frac{\partial L}{\partial z} \frac{\partial z}{\partial a} = W_2^{\top}(\hat{y} - y)$$
+    	Note that $\frac{\partial L}{\partial a}$ is a $d_1 \times 1$ vector.
+    	$$\frac{\partial a}{\partial W_1} = \frac{\partial}{\partial W_1} \sigma (W_1x) = \sigma (W_1 x)(1 - \sigma (W_1x)) x$$
+    	$$\frac{\partial L}{\partial W_1} = W_2^{\top}(\hat{y} - y) \sigma (W_1 x)(1 - \sigma (W_1x)) x$$
+    	Note that $\frac{\partial L}{\partial W_1}$ is a $d_1 \times d$ matrix.
+    	\\
+    	So, finally, our calculated weight updates for mini-batch SGD will be:
+    	$$W_2 = W_2 - \frac{\alpha}{b} \sum_{n=1}^{b} (\hat{y}^{(n)} - y^{(n)}) \sigma (W_1x^{(n)})^{\top}$$
+    	$$W_1 = W_1 - \frac{\alpha}{b} \sum_{n=1}^{b} \left(W_2^{\top}(\hat{y}^{(n)} - y^{(n)}) \sigma (W_1 x^{(n)})(1 - \sigma (W_1x^{(n)})) x^{(n)}\right) $$
+    	\\
+    \end{soln}
+    
     \item Implement it in NumPy or PyTorch using basic linear algebra operations. (e.g. You are not allowed to use auto-grad, built-in optimizer, model, etc. in this step. You can use library functions for data loading, processing, etc.). Evaluate your implementation on MNIST dataset, report test errors and learning curve. (10 pts)
     \item Implement the same network in PyTorch (or any other framework). You can use all the features of the framework e.g. auto-grad etc. Evaluate it on MNIST dataset, report test errors, and learning curve. (2 pts)
     \item Try different weight initialization a) all weights initialized to 0, and b) initialize the weights randomly between -1 and 1. Report test error and learning curves for both. (You can use either of the implementations) (3 pts)
