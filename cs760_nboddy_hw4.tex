@@ -30,6 +30,10 @@
 \usepackage{caption}
 \usepackage{bbm}
 \usepackage{enumitem}
+\usepackage{pgfplots}
+
+\usepgfplotslibrary{external}
+\tikzexternalize
 
 
 \urlstyle{rm}
@@ -388,7 +392,7 @@ Present the performance using a confusion matrix. A confusion matrix summarizes 
 \item If you take a test document and arbitrarily shuffle the order of its characters so that the words (and spaces) are scrambled beyond human recognition.  How does this shuffling affect your Naive Bayes classifier's prediction on this document?  Explain the key mathematical step in the Naive Bayes model that justifies your answer.
 
 \begin{soln}
-	Such a shuffling of a test document would not affect its prediction at all. Our Naive Bayes classifier considers only the counts (i.e. frequency) of each character and doesn't care at all about ordering. As described before, we consider the document to be a "bag of words", in that position is meaningless. We see this mathematically in part 5, where we express the probability of $x$ given $y$ to be the product of the conditional probabilities of every individual character in $x$.
+	Such a shuffling of a test document would not affect its prediction at all. Our Naive Bayes classifier considers only the counts (i.e. frequency) of each character and doesn't care at all about ordering. As described before, we consider the document to be a "bag of words", in that position is meaningless. We see this mathematically in part 5, where we express the probability of $x$ given $y$ to be the product of the conditional probabilities of every individual character in $x$. Our formulae don't take at all into consideration locality of the characters.
 \end{soln}
 
 \end{enumerate}
@@ -461,8 +465,67 @@ L(x, y) = -\sum_{i=1}^k y \text{log}(\hat{y})
     \end{soln}
     
     \item Implement it in NumPy or PyTorch using basic linear algebra operations. (e.g. You are not allowed to use auto-grad, built-in optimizer, model, etc. in this step. You can use library functions for data loading, processing, etc.). Evaluate your implementation on MNIST dataset, report test errors and learning curve. (10 pts)
+    
+    \begin{soln}
+    	For my implementation, I achieved an accuracy of 0.9539 using the full 60000 train set. My hidden layer had 100 neurons, my learning rate was 0.01, my batch size was 10, and I did 10 epochs (going through the entire training set 10 times). It took about 5 minutes to run.
+    	\\
+    	I tested the accuracy for other train set sizes and plotted the learning curve below.
+    	$$\text{Learning Curve}\begin{tabular}{ c  c }
+    		train set size & accuracy \\ \hline
+    		60000 & 0.9539 \\
+    		30000 & 0.9332 \\
+    		15000 & 0.9128 \\
+    		8000 & 0.8961 \\
+    		4000 & 0.8536 \\
+    		2000 & 0.7484 \\
+    		1000 & 0.4642 \\
+    		500 & 0.169 \\
+    		200 & 0.1135 \\
+    		100 & 0.1136 \\
+    		50 & 0.1131 \\
+    	\end{tabular}$$
+    	
+    	\begin{center}
+    		\begin{tikzpicture}
+    			\begin{axis}[
+    				title={Learning Curve of MNIST Performance},
+    				xlabel={Training Set Size},
+    				ylabel={Accuracy},
+    				xmode=log,
+    				xmin=0, xmax=60000,
+    				ymin=0, ymax=1,
+    				ytick={0,.2, .4, .6, .8, 1},
+    				ymajorgrids=true,
+    				grid style=dashed,
+    				]
+    				\addplot[
+    				color=red,
+    				mark=square,
+    				]
+    				coordinates {
+    					(50, 0.1131)(100, 0.1136)(200, 0.1135)(500, 0.169)(1000, 0.4642)(2000, 0.7484)(4000, 0.8536)(8000, 0.8961)(15000, 0.9128)(30000, 0.9332)(60000, 0.9539)
+    				};
+    			\end{axis}
+    		\end{tikzpicture}
+    	\end{center}
+    	
+    	As observed in the learning curve, as we approach a training set size of 0, we approach an accuracy of 0.1 (which would approximately be the accuracy of random guessing).
+    \end{soln}
+    
     \item Implement the same network in PyTorch (or any other framework). You can use all the features of the framework e.g. auto-grad etc. Evaluate it on MNIST dataset, report test errors, and learning curve. (2 pts)
+    
+    \begin{soln}
+    	I didn't get around to doing this, sorry.
+    	I would anticipate the implementation to be a lot more straightforward when using a library, and with its built-in optimizers available, it would likely outperform my personal implementation.
+    \end{soln}
+    
     \item Try different weight initialization a) all weights initialized to 0, and b) initialize the weights randomly between -1 and 1. Report test error and learning curves for both. (You can use either of the implementations) (3 pts)
+    
+    \begin{soln}
+    	I didn't get around to doing this, sorry.
+    	I'd anticipate that random weight initialization would, to some significant degree, outperform weights initialized to zero because it's less likely to get stuck in local minima.
+    \end{soln}
+    
 \end{enumerate}
 
 You should play with different hyperparameters like learning rate, batch size, etc. for your own learning. You only need to report results for any particular setting of hyperparameters. You should mention the values of those along with the results. Use $d_1 = 300$, $d_2 = 200$. For optimization use SGD (Stochastic gradient descent) without momentum, with some batch size say 32, 64, etc. MNIST can be obtained from here (https://pytorch.org/vision/ stable/datasets.html)
